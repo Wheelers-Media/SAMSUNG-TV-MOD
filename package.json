@@ -1,0 +1,11 @@
+{
+  "name": "my-home-launcher",
+  "version": "1.0.0",
+  "description": "Apple TV style home screen with a shelf of apps you add yourself.",
+  "license": "MIT",
+  "packageType": "app",
+  "appName": "My Home",
+  "appPath": "index.html",
+  "keys": ["ColorF0Red"],
+  "serviceFile": "service.js"
+}

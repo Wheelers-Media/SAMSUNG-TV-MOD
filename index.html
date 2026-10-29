@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Home</title>
+<style>
+  :root {
+    --bg0: #0b0d14; --bg1: #1a1f33;
+    --label: #ffffff; --label2: rgba(255,255,255,.72);
+    --accent: #0a84ff;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg0); color: var(--label);
+    font-family: "SF Pro Display", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  #bg { position: fixed; inset: 0; transition: background 600ms ease; }
+  #bg::after { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.05) 35%, rgba(5,7,12,.85) 100%); }
+
+  header { position: fixed; top: 48px; left: 90px; right: 90px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+  nav { display: flex; gap: 12px; }
+  nav .pill { font-size: 32px; font-weight: 600; padding: 12px 34px; border-radius: 999px; color: var(--label2); }
+  nav .pill.on { background: rgba(255,255,255,.16); color: var(--label); }
+  #clock { font-size: 34px; font-weight: 500; color: var(--label2); font-variant-numeric: tabular-nums; }
+
+  #hero { position: fixed; left: 90px; top: 250px; width: 1100px; z-index: 2; }
+  #hero .kicker { font-size: 30px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--label2); }
+  #hero h1 { font-size: 112px; line-height: 1.05; font-weight: 700; margin: 14px 0 18px; letter-spacing: -.02em; text-shadow: 0 4px 30px rgba(0,0,0,.5); }
+  #hero p { font-size: 36px; line-height: 1.35; color: var(--label2); max-width: 900px; }
+  #hero .cta { display: inline-block; margin-top: 36px; font-size: 34px; font-weight: 600; padding: 18px 54px; border-radius: 16px; background: rgba(255,255,255,.95); color: #111; }
+
+  #rowWrap { position: fixed; left: 0; right: 0; top: 640px; z-index: 2; }
+  #rowTitle { margin: 0 90px 16px; font-size: 34px; font-weight: 600; }
+  #row { display: flex; gap: 34px; padding: 40px 90px 70px; width: max-content; transition: transform 350ms cubic-bezier(.2,.8,.2,1); }
+  .tile { position: relative; width: 340px; height: 191px; border-radius: 22px; flex: none; overflow: hidden;
+    display: flex; align-items: flex-end; padding: 18px 22px; font-size: 30px; font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35); transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms; }
+  .tile .glyph { position: absolute; top: 14px; left: 22px; font-size: 72px; font-weight: 800; opacity: .95; }
+  .tile.add { background: rgba(255,255,255,.12); backdrop-filter: blur(6px); border: 2px dashed rgba(255,255,255,.4); }
+  .tile.focus { transform: scale(1.14); box-shadow: 0 30px 60px rgba(0,0,0,.55), 0 0 0 5px rgba(255,255,255,.95); z-index: 3; }
+  .tile.focus::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255,255,255,.28), rgba(255,255,255,0) 45%); }
+
+  #toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%) translateY(20px); opacity: 0;
+    background: rgba(40,44,60,.95); font-size: 30px; padding: 20px 36px; border-radius: 18px; z-index: 9; transition: all 250ms; max-width: 1400px; text-align: center; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  #sheet { position: fixed; inset: 0; z-index: 8; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.6); }
+  #sheet.show { display: flex; }
+  #sheet .card { width: 1000px; padding: 56px 64px; border-radius: 34px; background: rgba(34,38,54,.96); box-shadow: 0 40px 100px rgba(0,0,0,.6); }
+  #sheet h2 { font-size: 52px; margin-bottom: 8px; }
+  #sheet .hint { font-size: 28px; color: var(--label2); margin-bottom: 28px; }
+  #sheet label { display: block; font-size: 28px; color: var(--label2); margin: 18px 0 8px; }
+  #sheet input { width: 100%; font-size: 38px; padding: 16px 22px; border-radius: 16px; border: 3px solid transparent; background: rgba(255,255,255,.1); color: #fff; outline: none; }
+  #sheet input:focus { border-color: var(--accent); }
+  #sheet .btns { display: flex; gap: 20px; margin-top: 36px; justify-content: flex-end; }
+  #sheet button { font-size: 34px; font-weight: 600; padding: 16px 48px; border-radius: 16px; border: 3px solid transparent; background: rgba(255,255,255,.14); color: #fff; }
+  #sheet button:focus { outline: none; border-color: #fff; transform: scale(1.06); }
+  #sheet button.primary { background: var(--accent); }
+  #empty { display: none; font-size: 34px; color: var(--label2); }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+
+<header>
+  <nav><span class="pill on">Home</span><span class="pill">Apps</span><span class="pill">Settings</span></nav>
+  <div id="clock"></div>
+</header>
+
+<section id="hero">
+  <div class="kicker" id="hKicker">Open</div>
+  <h1 id="hTitle">&nbsp;</h1>
+  <p id="hSub"></p>
+  <span class="cta" id="hCta">Press OK to open</span>
+</section>
+
+<section id="rowWrap">
+  <div id="rowTitle">Your apps</div>
+  <div id="row" role="list"></div>
+</section>
+
+<div id="toast" role="status"></div>
+
+<div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="card">
+    <h2 id="sheetTitle">Add an app</h2>
+    <p class="hint">Enter the app's name and its Tizen app ID. Only apps already installed on this TV will open.</p>
+    <label for="inName">Name</label><input id="inName" autocomplete="off">
+    <label for="inId">App ID</label><input id="inId" autocomplete="off" placeholder="e.g. 111299001912">
+    <div class="btns"><button id="btnCancel">Cancel</button><button id="btnSave" class="primary">Add</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Default shelf. App IDs are the commonly published Tizen IDs and can differ by TV model/region:
+  // check yours with the Samsung developer tools if a tile does not open. Everything is editable on-screen.
+  var DEFAULTS = [
+    { name: "YouTube",     id: "111299001912",  sub: "Videos, music and live streams.", c1: "#ff3b30", c2: "#7a0f0a", glyph: "▶" },
+    { name: "Netflix",     id: "11101200001",   sub: "Movies and series.",              c1: "#e50914", c2: "#2b0305", glyph: "N" },
+    { name: "Prime Video", id: "3201512006785", sub: "Included with Prime.",            c1: "#00a8e1", c2: "#04283a", glyph: "P" },
+    { name: "Plex",        id: "3201512006963", sub: "Your own media library.",         c1: "#e5a00d", c2: "#3a2a02", glyph: "P" },
+    { name: "Apple TV",    id: "3201807016597", sub: "Originals and rentals.",          c1: "#6e6e73", c2: "#1c1c1e", glyph: "tv" }
+  ];
+  var PALETTE = [["#5e5ce6","#1b1a4a"],["#30b0c7","#08303a"],["#ff9f0a","#3d2503"],["#bf5af2","#2c0f3d"],["#32d74b","#0a3014"]];
+  var KEY = "launcher.apps.v1";
+
+  var apps, idx = 0, sheetOpen = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function load() {
+    try { var s = JSON.parse(localStorage.getItem(KEY)); if (Array.isArray(s) && s.length) return s; } catch (e) {}
+    return DEFAULTS.slice();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(apps)); } catch (e) {} }
+
+  function render() {
+    var row = $("row"); row.innerHTML = "";
+    apps.forEach(function (a, i) {
+      var t = document.createElement("div");
+      t.className = "tile"; t.setAttribute("role", "listitem");
+      t.style.background = "linear-gradient(135deg," + a.c1 + "," + a.c2 + ")";
+      t.innerHTML = '<span class="glyph"></span><span class="nm"></span>';
+      t.querySelector(".glyph").textContent = a.glyph || (a.name || "?").charAt(0).toUpperCase();
+      t.querySelector(".nm").textContent = a.name;
+      row.appendChild(t);
+    });
+    var add = document.createElement("div");
+    add.className = "tile add"; add.innerHTML = '<span class="glyph">+</span><span>Add app</span>';
+    row.appendChild(add);
+    focus(Math.min(idx, apps.length));
+  }
+
+  function focus(i) {
+    var tiles = $("row").children;
+    idx = Math.max(0, Math.min(i, tiles.length - 1));
+    for (var k = 0; k < tiles.length; k++) tiles[k].classList.toggle("focus", k === idx);
+    var isAdd = idx === apps.length, a = apps[idx];
+    var c = isAdd ? ["#3a3f55", "#12141f"] : [a.c1, a.c2];
+    $("bg").style.background = "radial-gradient(1400px 800px at 75% 20%," + c[0] + " 0%, transparent 70%), linear-gradient(160deg," + c[1] + ",#0b0d14)";
+    $("hKicker").textContent = isAdd ? "Customize" : "Open";
+    $("hTitle").textContent = isAdd ? "Add an app" : a.name;
+    $("hSub").textContent = isAdd ? "Put any installed app on your shelf by its app ID." : (a.sub || "");
+    $("hCta").textContent = isAdd ? "Press OK to add" : "Press OK to open";
+    // keep focused tile on screen
+    var tile = tiles[idx], left = tile.offsetLeft, view = 1920 - 180;
+    var shift = Math.max(0, left + 340 - view);
+    $("row").style.transform = "translateX(" + (-shift) + "px)";
+  }
+
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast._h); toast._h = setTimeout(function () { t.classList.remove("show"); }, 3200);
+  }
+
+  function launch(a) {
+    if (window.tizen && tizen.application) {
+      try {
+        tizen.application.launch(a.id, function () {}, function (e) {
+          toast("Couldn't open " + a.name + ". Check the app is installed and the ID is right (" + (e && e.message || "error") + ").");
+        });
+        return;
+      } catch (e) { toast("Couldn't open " + a.name + ": " + e.message); return; }
+    }
+    toast("Preview only: would open " + a.name + " (" + a.id + ")");
+  }
+
+  function openSheet() { sheetOpen = true; $("sheet").classList.add("show"); $("inName").value = ""; $("inId").value = ""; $("inName").focus(); }
+  function closeSheet() { sheetOpen = false; $("sheet").classList.remove("show"); document.activeElement && document.activeElement.blur(); }
+  function saveSheet() {
+    var n = $("inName").value.trim(), id = $("inId").value.trim();
+    if (!n || !id) { toast("Enter both a name and an app ID."); return; }
+    var p = PALETTE[apps.length % PALETTE.length];
+    apps.push({ name: n, id: id, sub: "Added by you.", c1: p[0], c2: p[1] });
+    save(); closeSheet(); render(); focus(apps.length - 1); toast("Added " + n);
+  }
+
+  var removeArmed = null;
+  function removeFocused() {
+    if (idx >= apps.length) return;
+    var a = apps[idx];
+    if (removeArmed === a.id) { apps.splice(idx, 1); save(); removeArmed = null; render(); toast("Removed " + a.name + " from your shelf (the app itself is untouched)"); }
+    else { removeArmed = a.id; toast("Press the red button again to remove " + a.name + " from this shelf"); setTimeout(function () { removeArmed = null; }, 4000); }
+  }
+
+  function clock() { var d = new Date(); $("clock").textContent = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+
+  document.addEventListener("keydown", function (e) {
+    var k = e.keyCode;
+    if (sheetOpen) {
+      if (k === 27 || k === 10009) { closeSheet(); e.preventDefault(); return; }
+      if (k === 40 || k === 38) {
+        var order = [$("inName"), $("inId"), $("btnCancel"), $("btnSave")], cur = order.indexOf(document.activeElement);
+        var n = Math.max(0, Math.min(order.length - 1, cur + (k === 40 ? 1 : -1))); order[n].focus(); e.preventDefault();
+      } else if ((k === 37 || k === 39) && document.activeElement.tagName === "BUTTON") {
+        ($("btnCancel") === document.activeElement ? $("btnSave") : $("btnCancel")).focus(); e.preventDefault();
+      } else if (k === 13 && document.activeElement.tagName === "BUTTON") {
+        (document.activeElement.id === "btnSave" ? saveSheet : closeSheet)(); e.preventDefault();
+      }
+      return;
+    }
+    if (k === 37) focus(idx - 1);
+    else if (k === 39) focus(idx + 1);
+    else if (k === 13) { idx === apps.length ? openSheet() : launch(apps[idx]); }
+    else if (k === 403 || k === 82) removeFocused();   // red button (Samsung 403) or R in a desktop preview
+    else if (k === 10009) { try { tizen.application.getCurrentApplication().exit(); } catch (x) {} }
+    else return;
+    e.preventDefault();
+  });
+  $("btnCancel").addEventListener("click", closeSheet);
+  $("btnSave").addEventListener("click", saveSheet);
+
+  // Register remote keys on a real TV (the colour buttons need explicit registration).
+  try { tizen.tvinputdevice.registerKey("ColorF0Red"); } catch (e) {}
+
+  apps = load(); render(); clock(); setInterval(clock, 15000);
+})();
+</script>
+</body>
+</html>
